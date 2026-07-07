@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package notification.v1;
+
+option go_package = "github.com/1oneday2/notification-service/pkg/api/v1;v1";
+
+// NotificationService предоставляет RPC для отправки уведомлений.
+service NotificationService {
+  // SendNotification принимает запрос на отправку и ставит его в очередь.
+  rpc SendNotification(SendNotificationRequest) returns (SendNotificationResponse);
+}
+
+// Тип уведомления.
+enum NotificationType {
+  NOTIFICATION_TYPE_UNSPECIFIED = 0;
+  SMS = 1;
+  EMAIL = 2;
+}
+
+// Запрос на отправку уведомления.
+message SendNotificationRequest {
+  // Уникальный ключ идемпотентности, предоставляемый клиентом (например, UUIDv4).
+  string idempotency_key = 1;
+  NotificationType type = 2;
+  string target = 3;
+  string payload = 4;
+}
+
+// Ответ после успешной постановки в очередь.
+message SendNotificationResponse {
+  // Уникальный ID события, сгенерированный сервером.
+  string event_id = 1;
+  // Статус, подтверждающий прием.
+  string status = 2;
+}
